@@ -11,6 +11,7 @@ app = Flask(__name__)
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add(types.KeyboardButton("Жилье"), types.KeyboardButton("🏠 Жилье"))
     markup.add(types.KeyboardButton("🏔 Локации"), types.KeyboardButton("🏠 Базы отдыха"))
     markup.add(types.KeyboardButton("📍 Как добраться"), types.KeyboardButton("🚕 Такси"))
     markup.add(types.KeyboardButton("📜 Легенды"), types.KeyboardButton("ℹ️ О Баянауле"))
@@ -59,7 +60,23 @@ def handle_text(message):
 
     # Прочие разделы
     elif message.text == "🏠 Базы отдыха":
-        bot.send_message(message.chat.id, "🏠 *Базы отдыха:*\n\n• [Алтын-Тау](https://www.instagram.com/altyn_tau_bayanauyl/)\n• [Жасыбай](https://www.instagram.com/zhasybay_bayanauyl/)", parse_mode="Markdown")
+        bot.send_message(message.chat.id, "🏠 *Базы отдыха:*\n\n• [Султан](https://www.instagram.com/sultan_zhasybay?igsh=OXVka25wbnhiMTl4)\n , parse_mode="Markdown")
+
+elif message.text == "🏠 Жилье":
+        # Описание базы
+        desc = ("🏠 *'Домик посуточно'*\n\n"
+                "💰 *Цена:* 7000 тг/сутки с человека.\n"
+                "📞 *Телефон:* +7 (777) 939 09 67\n"
+                "📝 *Описание:* Уютный домик у самого леса, чистый воздух, прекрасный вид на горы.")
+        bot.send_message(message.chat.id, desc, parse_mode="Markdown")
+        
+        # Отправка альбома с 3 фото (вставь свои ссылки на фото)
+        media = [
+            types.InputMediaPhoto(media="https://ibb.co.com/279rrg4K.jpg"),
+            types.InputMediaPhoto(media="https://ibb.co.com/4wSwBQFX.jpg"),
+            types.InputMediaPhoto(media="https://ibb.co.com/1fz2GRVf.jpg")
+        ]
+        bot.send_media_group(message.chat.id, media)
 
     elif message.text == "📍 Как добраться":
         bot.send_message(message.chat.id, "🚗 Добраться можно из Павлодара или Экибастуза на авто или маршрутке.")
