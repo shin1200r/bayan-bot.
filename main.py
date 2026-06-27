@@ -20,7 +20,6 @@ def send_welcome(message):
 # --- ОБРАБОТКА КНОПОК ---
 @bot.message_handler(func=lambda message: True)
 def handle_text(message):
-    # Раздел Локации
     if message.text == "🏔 Локации":
         bot.send_message(message.chat.id, "📍 Выберите локацию:", 
                          reply_markup=types.ReplyKeyboardMarkup(resize_keyboard=True).add(
@@ -28,7 +27,6 @@ def handle_text(message):
                              types.KeyboardButton("Сабындыколь"), types.KeyboardButton("Торайгыр")
                          ))
 
-    # Раздел Легенды
     elif message.text == "📜 Легенды":
         bot.send_message(message.chat.id, "📜 Выберите легенду, чтобы узнать историю:", 
                          reply_markup=types.ReplyKeyboardMarkup(resize_keyboard=True).add(
@@ -36,7 +34,6 @@ def handle_text(message):
                              types.KeyboardButton("Сабындыколь"), types.KeyboardButton("Торайгыр")
                          ))
 
-    # Логика конкретных мест
     elif message.text == "Баба-Яга":
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("📍 Найти в 2GIS", url="https://2gis.kz/pavlodar/search/%D0%BF%D0%B5%D1%89%D0%B5%D1%80%D0%B0%20%D0%91%D0%B0%D0%B1%D0%B0-%D0%AF%D0%B3%D0%B0"))
@@ -58,19 +55,22 @@ def handle_text(message):
         bot.send_message(message.chat.id, "📖 *Легенда о Торайгыре:*\nОзеро вдохновения великого поэта Султанмахмута.", parse_mode="Markdown", reply_markup=markup)
 
     elif message.text == "🏠 Базы отдыха":
-        bot.send_message(message.chat.id, "🏠 *Базы отдыха:*\n\n• [Султан](nhttps://www.instagram.com/sultan_zhasybay?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==)", parse_mode="Markdown")
+        bot.send_message(message.chat.id, "🏠 *Базы отдыха:*\n\n• [Султан](https://www.instagram.com/sultan_zhasybay/)", parse_mode="Markdown")
 
     elif message.text == "🏠 Жилье":
-        # Ссылка на одно фото, которое точно работает (вставь сюда прямую .jpg ссылку)
-        photo_url = "https://ibb.co.com/dJ6FW1cy.jpg" 
-        
-        desc = ("🏠 *'Домик посуточно'*\n\n"
-                "💰 *Цена:* 7000 тг/сутки с человека.\n"
-                "📞 *Телефон:* +7 (777) 939 09 67\n"
-                "📝 *Описание:* Уютный домик у самого леса.")
-        
-        # Отправляем фото с подписью
-        bot.send_photo(message.chat.id, photo_url, caption=desc, parse_mode="Markdown")
+        text_info = """🏠 Домик
+
+💰 Цена: 7000 тг/сутки с человека.
+📞 Телефон: +7 (777) 939 09 67
+📝 Уютный домик у самого леса, чистый воздух."""
+        try:
+            # Ищем файл в папке images
+            photo = open('images/domik.jpg', 'rb')
+            bot.send_photo(message.chat.id, photo, caption=text_info)
+            photo.close()
+        except FileNotFoundError:
+            bot.send_message(message.chat.id, text_info + "\n\n(Фото временно недоступно)")
+
     elif message.text == "📍 Как добраться":
         bot.send_message(message.chat.id, "🚗 Добраться можно из Павлодара или Экибастуза на авто или маршрутке.")
 
