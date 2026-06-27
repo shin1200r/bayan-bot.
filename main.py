@@ -1,4 +1,4 @@
-import telebot
+тimport telebot
 import os
 from flask import Flask, request
 from telebot import types
@@ -7,45 +7,73 @@ TOKEN = '8201596025:AAHi7UUJdAr6EWX6JiQAISrnaDsrDHRPvWA'
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
-# --- ЛОГИКА БОТА ---
+# --- ГЛАВНОЕ МЕНЮ ---
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    # Создаем кнопки
-    item1 = types.KeyboardButton("🏔 Локации")
-    item2 = types.KeyboardButton("ℹ️ О Баянауле")
-    item3 = types.KeyboardButton("📍 Как добраться")
-    item4 = types.KeyboardButton("🚕 Такси")
-    item5 = types.KeyboardButton("🏠 Базы отдыха")
-    item6 = types.KeyboardButton("📜 Легенды")
-    
-    markup.add(item1, item2, item3, item4, item5, item6)
+    markup.add(types.KeyboardButton("🏔 Локации"), types.KeyboardButton("🏠 Базы отдыха"))
+    markup.add(types.KeyboardButton("📍 Как добраться"), types.KeyboardButton("🚕 Такси"))
+    markup.add(types.KeyboardButton("📜 Легенды"), types.KeyboardButton("ℹ️ О Баянауле"))
     bot.send_message(message.chat.id, "Добро пожаловать в гид по Баянаулу! Выберите раздел:", reply_markup=markup)
 
+# --- ОБРАБОТКА КНОПОК ---
 @bot.message_handler(func=lambda message: True)
 def handle_text(message):
+    # Раздел Локации
     if message.text == "🏔 Локации":
-        bot.send_message(message.chat.id, "Популярные места:\n1. Озеро Сабындыколь\n2. Озеро Торайгыр\n3. Пещера Коныр-Аулие\n4. Гора Найзатас")
-    
-    elif message.text == "ℹ️ О Баянауле":
-        bot.send_message(message.chat.id, "Баянаул — это государственный национальный природный парк, жемчужина Казахстана, где горы встречаются с кристально чистыми озерами.")
-    
-    elif message.text == "📍 Как добраться":
-        bot.send_message(message.chat.id, "Добраться можно из Павлодара или Экибастуза на личном авто или рейсовых автобусах.")
-    
-    elif message.text == "🚕 Такси":
-        bot.send_message(message.chat.id, "Здесь можно добавить контакты местных таксистов или ссылки на службы заказа.")
-    
-    elif message.text == "🏠 Базы отдыха":
-        bot.send_message(message.chat.id, "Список популярных баз отдыха: (Здесь можно перечислить основные базы отдыха в Баянауле).")
-    
-    elif message.text == "📜 Легенды":
-        bot.send_message(message.chat.id, "📜 *Легенда о Коныр-Аулие*\n\nСогласно преданиям, в пещере Коныр-Аулие скрывался святой старец. Вода в этой пещере считается целебной и исполняет желания. Приезжайте, чтобы ощутить эту магию сами!")
-    
-    else:
-        bot.reply_to(message, "Я вас не совсем понял. Используйте кнопки для навигации!")
+        bot.send_message(message.chat.id, "📍 Выберите локацию:", 
+                         reply_markup=types.ReplyKeyboardMarkup(resize_keyboard=True).add(
+                             types.KeyboardButton("Баба-Яга"), types.KeyboardButton("Жасыбай"), 
+                             types.KeyboardButton("Сабындыколь"), types.KeyboardButton("Торайгыр")
+                         ))
 
-# --- WEBHOOK ---
+    # Раздел Легенды (подменю)
+    elif message.text == "📜 Легенды":
+        bot.send_message(message.chat.id, "📜 Выберите легенду, чтобы узнать историю:", 
+                         reply_markup=types.ReplyKeyboardMarkup(resize_keyboard=True).add(
+                             types.KeyboardButton("Баба-Яга"), types.KeyboardButton("Жасыбай"), 
+                             types.KeyboardButton("Сабындыколь"), types.KeyboardButton("Торайгыр")
+                         ))
+
+    # Логика конкретных мест (Легенды + Кнопки)
+    elif message.text == "Баба-Яга":
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("📍 Найти в 2GIS", url="https://2gis.kz/pavlodar/search/%D0%BF%D0%B5%D1%89%D0%B5%D1%80%D0%B0%20%D0%91%D0%B0%D0%B1%D0%B0-%D0%AF%D0%B3%D0%B0"))
+        bot.send_message(message.chat.id, "👹 *Легенда о Пещере Бабы-Яги:*\nСкальная фигура, напоминающая старуху, по легенде является окаменевшей колдуньей, которая пряталась в горах.", parse_mode="Markdown", reply_markup=markup)
+
+    elif message.text == "Жасыбай":
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("📍 Найти в 2GIS", url="https://2gis.kz/pavlodar/search/%D0%BE%D0%B7%D0%B5%D1%80%D0%BE%20%D0%96%D0%B0%D1%81%D1%8B%D0%B1%D0%B0%D0%B9"))
+        markup.add(types.InlineKeyboardButton("📸 Instagram Базы на Жасыбае", url="https://www.instagram.com/zhasybay_bayanauyl/"))
+        bot.send_message(message.chat.id, "⚔️ *Легенда о Жасыбае:*\nХрабрый батыр, погибший в бою. Озеро названо в его честь.", parse_mode="Markdown", reply_markup=markup)
+
+    elif message.text == "Сабындыколь":
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("📍 Найти в 2GIS", url="https://2gis.kz/pavlodar/search/%D0%BE%D0%B7%D0%B5%D1%80%D0%BE%20%D0%A1%D0%B0%D0%B1%D1%8B%D0%BD%D0%B4%D1%8B%D0%BA%D0%BE%D0%BB%D1%8C"))
+        bot.send_message(message.chat.id, "🧼 *Легенда о Сабындыколе:*\nКрасавица Баян уронила мыло, и озеро стало 'мыльным'.", parse_mode="Markdown", reply_markup=markup)
+
+    elif message.text == "Торайгыр":
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("📍 Найти в 2GIS", url="https://2gis.kz/pavlodar/search/%D0%BE%D0%B7%D0%B5%D1%80%D0%BE%20%D0%A2%D0%BE%D1%80%D0%B0%D0%B9%D0%B3%D1%8B%D1%80"))
+        bot.send_message(message.chat.id, "📖 *Легенда о Торайгыре:*\nОзеро вдохновения великого поэта Султанмахмута.", parse_mode="Markdown", reply_markup=markup)
+
+    # Прочие разделы
+    elif message.text == "🏠 Базы отдыха":
+        bot.send_message(message.chat.id, "🏠 *Базы отдыха:*\n\n• [Алтын-Тау](https://www.instagram.com/altyn_tau_bayanauyl/)\n• [Жасыбай](https://www.instagram.com/zhasybay_bayanauyl/)", parse_mode="Markdown")
+
+    elif message.text == "📍 Как добраться":
+        bot.send_message(message.chat.id, "🚗 Добраться можно из Павлодара или Экибастуза на авто или маршрутке.")
+
+    elif message.text == "🚕 Такси":
+        bot.send_message(message.chat.id, "🚕 Для заказа такси используйте 2GIS или местные службы.")
+
+    elif message.text == "ℹ️ О Баянауле":
+        bot.send_message(message.chat.id, "🏔 Баянаул — первый природный парк Казахстана. Жемчужина наших гор!")
+
+    else:
+        bot.reply_to(message, "Используйте кнопки для навигации.")
+
+# --- WEBHOOK (БЕЗ ИЗМЕНЕНИЙ) ---
 @app.route('/' + TOKEN, methods=['POST'])
 def get_message():
     json_string = request.get_data().decode('utf-8')
@@ -57,11 +85,5 @@ def get_message():
 def home():
     return "Bot is alive"
 
-def set_webhook():
-    webhook_url = f"https://bayan-bot-web.onrender.com/{TOKEN}"
-    bot.remove_webhook()
-    bot.set_webhook(url=webhook_url)
-
 if __name__ == "__main__":
-    set_webhook()
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
