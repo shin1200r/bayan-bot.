@@ -109,4 +109,10 @@ def handle_text(message):
         start_command(message)
 
 # Запуск
-bot.polling(none_stop=True)
+while True:
+    try:
+        bot.polling(none_stop=True, interval=0, timeout=20)
+    except Exception as e:
+        print(f"Ошибка: {e}. Перезапуск через 5 секунд...")
+        import time
+        time.sleep(5)
