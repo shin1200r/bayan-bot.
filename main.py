@@ -58,21 +58,19 @@ def handle_text(message):
         bot.send_message(message.chat.id, "📖 *Легенда о Торайгыре:*\nОзеро вдохновения великого поэта Султанмахмута.", parse_mode="Markdown", reply_markup=markup)
 
     elif message.text == "🏠 Базы отдыха":
-        bot.send_message(message.chat.id, "🏠 *Базы отдыха:*\n\n• [Султан](https://www.instagram.com/sultan_zhasybay?igsh=OXVka25wbnhiMTl4)", parse_mode="Markdown")
+        bot.send_message(message.chat.id, "🏠 *Базы отдыха:*\n\n• [Султан](nhttps://www.instagram.com/sultan_zhasybay?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==)", parse_mode="Markdown")
 
     elif message.text == "🏠 Жилье":
+        # Ссылка на одно фото, которое точно работает (вставь сюда прямую .jpg ссылку)
+        photo_url = "https://ibb.co.com/dJ6FW1cy.jpg" 
+        
         desc = ("🏠 *'Домик посуточно'*\n\n"
                 "💰 *Цена:* 7000 тг/сутки с человека.\n"
                 "📞 *Телефон:* +7 (777) 939 09 67\n"
-                "📝 *Описание:* Уютный домик у самого леса, чистый воздух.")
-        bot.send_message(message.chat.id, desc, parse_mode="Markdown")
-        media = [
-            types.InputMediaPhoto(media="https://ibb.co.com/279rrg4K.jpg"),
-            types.InputMediaPhoto(media="https://ibb.co.com/4wSwBQFX.jpg"),
-            types.InputMediaPhoto(media="https://ibb.co.com/1fz2GRVf.jpg")
-        ]
-        bot.send_media_group(message.chat.id, media)
-
+                "📝 *Описание:* Уютный домик у самого леса.")
+        
+        # Отправляем фото с подписью
+        bot.send_photo(message.chat.id, photo_url, caption=desc, parse_mode="Markdown")
     elif message.text == "📍 Как добраться":
         bot.send_message(message.chat.id, "🚗 Добраться можно из Павлодара или Экибастуза на авто или маршрутке.")
 
