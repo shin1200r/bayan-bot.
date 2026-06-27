@@ -11,10 +11,10 @@ app = Flask(__name__)
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add(types.KeyboardButton("Жилье"), types.KeyboardButton("🏠 Жилье"))
-    markup.add(types.KeyboardButton("🏔 Локации"), types.KeyboardButton("🏠 Базы отдыха"))
+    markup.add(types.KeyboardButton("🏠 Жилье"), types.KeyboardButton("🏠 Базы отдыха"))
+    markup.add(types.KeyboardButton("🏔 Локации"), types.KeyboardButton("📜 Легенды"))
     markup.add(types.KeyboardButton("📍 Как добраться"), types.KeyboardButton("🚕 Такси"))
-    markup.add(types.KeyboardButton("📜 Легенды"), types.KeyboardButton("ℹ️ О Баянауле"))
+    markup.add(types.KeyboardButton("ℹ️ О Баянауле"))
     bot.send_message(message.chat.id, "Добро пожаловать в гид по Баянаулу! Выберите раздел:", reply_markup=markup)
 
 # --- ОБРАБОТКА КНОПОК ---
@@ -28,7 +28,7 @@ def handle_text(message):
                              types.KeyboardButton("Сабындыколь"), types.KeyboardButton("Торайгыр")
                          ))
 
-    # Раздел Легенды (подменю)
+    # Раздел Легенды
     elif message.text == "📜 Легенды":
         bot.send_message(message.chat.id, "📜 Выберите легенду, чтобы узнать историю:", 
                          reply_markup=types.ReplyKeyboardMarkup(resize_keyboard=True).add(
@@ -36,16 +36,15 @@ def handle_text(message):
                              types.KeyboardButton("Сабындыколь"), types.KeyboardButton("Торайгыр")
                          ))
 
-    # Логика конкретных мест (Легенды + Кнопки)
+    # Логика конкретных мест
     elif message.text == "Баба-Яга":
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("📍 Найти в 2GIS", url="https://2gis.kz/pavlodar/search/%D0%BF%D0%B5%D1%89%D0%B5%D1%80%D0%B0%20%D0%91%D0%B0%D0%B1%D0%B0-%D0%AF%D0%B3%D0%B0"))
-        bot.send_message(message.chat.id, "👹 *Легенда о Пещере Бабы-Яги:*\nСкальная фигура, напоминающая старуху, по легенде является окаменевшей колдуньей, которая пряталась в горах.", parse_mode="Markdown", reply_markup=markup)
+        bot.send_message(message.chat.id, "👹 *Легенда о Пещере Бабы-Яги:*\nСкальная фигура, напоминающая старуху, по легенде является окаменевшей колдуньей.", parse_mode="Markdown", reply_markup=markup)
 
     elif message.text == "Жасыбай":
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("📍 Найти в 2GIS", url="https://2gis.kz/pavlodar/search/%D0%BE%D0%B7%D0%B5%D1%80%D0%BE%20%D0%96%D0%B0%D1%81%D1%8B%D0%B1%D0%B0%D0%B9"))
-        markup.add(types.InlineKeyboardButton("📸 Instagram Базы на Жасыбае", url="https://www.instagram.com/zhasybay_bayanauyl/"))
         bot.send_message(message.chat.id, "⚔️ *Легенда о Жасыбае:*\nХрабрый батыр, погибший в бою. Озеро названо в его честь.", parse_mode="Markdown", reply_markup=markup)
 
     elif message.text == "Сабындыколь":
@@ -58,19 +57,15 @@ def handle_text(message):
         markup.add(types.InlineKeyboardButton("📍 Найти в 2GIS", url="https://2gis.kz/pavlodar/search/%D0%BE%D0%B7%D0%B5%D1%80%D0%BE%20%D0%A2%D0%BE%D1%80%D0%B0%D0%B9%D0%B3%D1%8B%D1%80"))
         bot.send_message(message.chat.id, "📖 *Легенда о Торайгыре:*\nОзеро вдохновения великого поэта Султанмахмута.", parse_mode="Markdown", reply_markup=markup)
 
-    # Прочие разделы
     elif message.text == "🏠 Базы отдыха":
-        bot.send_message(message.chat.id, "🏠 *Базы отдыха:*\n\n• [Султан](https://www.instagram.com/sultan_zhasybay?igsh=OXVka25wbnhiMTl4)\n , parse_mode="Markdown")
+        bot.send_message(message.chat.id, "🏠 *Базы отдыха:*\n\n• [Султан](https://www.instagram.com/sultan_zhasybay?igsh=OXVka25wbnhiMTl4)", parse_mode="Markdown")
 
-elif message.text == "🏠 Жилье":
-        # Описание базы
+    elif message.text == "🏠 Жилье":
         desc = ("🏠 *'Домик посуточно'*\n\n"
                 "💰 *Цена:* 7000 тг/сутки с человека.\n"
                 "📞 *Телефон:* +7 (777) 939 09 67\n"
-                "📝 *Описание:* Уютный домик у самого леса, чистый воздух, прекрасный вид на горы.")
+                "📝 *Описание:* Уютный домик у самого леса, чистый воздух.")
         bot.send_message(message.chat.id, desc, parse_mode="Markdown")
-        
-        # Отправка альбома с 3 фото (вставь свои ссылки на фото)
         media = [
             types.InputMediaPhoto(media="https://ibb.co.com/279rrg4K.jpg"),
             types.InputMediaPhoto(media="https://ibb.co.com/4wSwBQFX.jpg"),
@@ -90,7 +85,7 @@ elif message.text == "🏠 Жилье":
     else:
         bot.reply_to(message, "Используйте кнопки для навигации.")
 
-# --- WEBHOOK (БЕЗ ИЗМЕНЕНИЙ) ---
+# --- WEBHOOK ---
 @app.route('/' + TOKEN, methods=['POST'])
 def get_message():
     json_string = request.get_data().decode('utf-8')
