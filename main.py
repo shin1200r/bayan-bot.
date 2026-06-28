@@ -4,7 +4,7 @@ from telebot import types
 import google.generativeai as genai
 from flask import Flask, request
 
-# --- Инициализация ---
+# Инициализация
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 
@@ -14,20 +14,17 @@ model = genai.GenerativeModel('gemini-pro')
 
 app = Flask(__name__)
 
-# --- Кнопки и Меню ---
+# Кнопки
 def get_main_menu():
     markup = types.InlineKeyboardMarkup()
-    button1 = types.InlineKeyboardButton("Информация", callback_data="info")
-    button2 = types.InlineKeyboardButton("Помощь", callback_data="help")
-    markup.add(button1, button2)
+    markup.add(types.InlineKeyboardButton("Информация", callback_data="info"),
+               types.InlineKeyboardButton("Помощь", callback_data="help"))
     return markup
 
-# --- Команды ---
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.reply_to(message, "Привет! Выбери действие:", reply_markup=get_main_menu())
 
-# --- Обработка кнопок ---
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     if call.data == "info":
@@ -37,19 +34,21 @@ def callback_query(call):
         bot.answer_callback_query(call.id, "Помощь в разработке")
         bot.send_message(call.message.chat.id, "Бот готов к работе.")
 
-# --- Обработка текста (ИИ) ---
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     try:
+        # Проверка, что API ключ вообще есть
+        if not GEMINI_API_KEY:
+            raise Exception("API ключ Gemini не найден в настройках!")
+            
         response = model.generate_content(message.text)
         bot.reply_to(message, response.text)
     except Exception as e:
-        print(f"DEBUG ERROR: {e}")
-        bot.reply_to(message, "Ошибка ИИ.")
+        # Это самое важное: мы выводим ошибку в логи, чтобы понять, что не так
+        print(f"DEBUG ERROR: {e}") 
+        bot.reply_to(message, f"Ошибка ИИ: {str(e)[:50]}") # Бот пришлет ошибку прямо в чат
 
-# --- Исправленный Webhook для Render ---
-# Теперь бот слушает запросы по пути с токеном, как того требует Telegram
-@app.route('/' + TELEGRAM_TOKEN, methods=['POST'])
+@app.route('/', methods=['POST'])
 def webhook():
     if request.headers.get('content-type') == 'application/json':
         json_string = request.get_data().decode('utf-8')
