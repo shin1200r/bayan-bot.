@@ -1,4 +1,4 @@
-import telebot
+тimport telebot
 import os
 from flask import Flask, request
 from telebot import types
@@ -14,7 +14,7 @@ def get_main_markup():
     markup.add("🏠 Жилье", "🏠 Базы отдыха")
     markup.add("🏔 Локации", "📜 Легенды")
     markup.add("🚕 Такси по Баянаулу", "🚚 Доставка")
-    markup.add("📢 Реклама", "ℹ️ О Баянауле") # Вот сюда добавили кнопку
+    markup.add("📢 Реклама", "ℹ️ О Баянауле")
     return markup
 
 @bot.message_handler(content_types=['photo'])
@@ -32,7 +32,6 @@ def handle_text(message):
         send_welcome(message)
     
     elif message.text == "🏠 Жилье":
-        # Твой ID вставлен сюда:
         photo_id = "AgACAgIAAxkBAAIBPGpAGjHsRzNxN8Fp0FxGxh580C5iAAIFGGsblMsJSkDowOd5raV3AQADAgADeQADPAQ"
         desc = "🏠 *Уютный домик*\n\n💰 Цена: 7000 тг/сутки с человека.\n📞 Телефон: +7 (777) 939 09 67\n📝 Ваш идеальный отдых в окружении гор."
         bot.send_photo(message.chat.id, photo_id, caption=desc, parse_mode="Markdown", reply_markup=get_main_markup())
