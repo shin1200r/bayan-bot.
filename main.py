@@ -4,13 +4,11 @@ from flask import Flask, request
 from telebot import types
 
 TOKEN = '8201596025:AAHi7UUJdAr6EWX6JiQAISrnaDsrDHRPvWA'
-# Твоя ссылка на Render
 WEBHOOK_URL = 'https://bayan-bot-web.onrender.com/' 
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
-# Принудительно настраиваем вебхук
 bot.remove_webhook()
 bot.set_webhook(url=WEBHOOK_URL + TOKEN)
 
@@ -28,37 +26,27 @@ def send_welcome(message):
 
 @bot.message_handler(func=lambda message: True)
 def handle_text(message):
-    text = message.text.strip()
-    print(f"DEBUG: Получен текст: {text}")
-
-    if text == "🔙 Главное меню" or text == "/start":
-        send_welcome(message)
+    # Приводим текст к нижнему регистру для надежности
+    text = message.text.strip().lower()
     
-    elif "Реклама" in text:
+    if "реклам" in text:
         ads_info = ("📢 *Размещение рекламы*\n\n"
-            "Хотите, чтобы информация о вашем бизнесе появилась в этом боте? "
-            "Это отличный способ привлечь туристов в Баянауле!\n\n"
+            "Хотите, чтобы информация о вашем бизнесе появилась в этом боте?\n\n"
             "📩 *Связаться с разработчиком:*\n"
-            "Напишите мне лично: @Askelad_lucius_Artorius_Castus\n"
-            "Обсудим условия и форматы размещения.")
+            "@Askelad_lucius_Artorius_Castus")
         bot.send_message(message.chat.id, ads_info, parse_mode="Markdown", reply_markup=get_main_markup())
 
-    elif "Жилье" in text:
+    elif "жиль" in text:
         photo_id = "AgACAgIAAxkBAAIBPGpAGjHsRzNxN8Fp0FxGxh580C5iAAIFGGsblMsJSkDowOd5raV3AQADAgADeQADPAQ"
-        desc = "🏠 *Уютный домик*\n\n💰 Цена: 7000 тг/сутки с человека.\n📞 Телефон: +7 (777) 939 09 67\n📝 Ваш идеальный отдых в окружении гор."
-        bot.send_photo(message.chat.id, photo_id, caption=desc, parse_mode="Markdown", reply_markup=get_main_markup())
+        bot.send_photo(message.chat.id, photo_id, caption="🏠 *Уютный домик*", parse_mode="Markdown", reply_markup=get_main_markup())
 
-    elif "Доставка" in text:
-        text_delivery = ("🍗 *Grill Bayanaul*\n\n"
-                "• Куры гриль: от 4000 тг\n"
-                "• Фри: 750 тг | Наггетсы: 1200 тг\n"
-                "🕒 Работаем: 09:00 - 00:00\n"
-                "🚚 Доставка: 500 тг (09:00 - 21:00)\n"
-                "📞 +7 (777) 127-64-40")
+    elif "доставк" in text:
+        text_delivery = "🍗 *Grill Bayanaul*\n📞 +7 (777) 127-64-40"
         bot.send_message(message.chat.id, text_delivery, parse_mode="Markdown", reply_markup=get_main_markup())
     
     else:
-        bot.send_message(message.chat.id, f"Вы нажали: {text}. Если бот не отреагировал, нажмите /start", reply_markup=get_main_markup())
+        # Если ничего не подошло, отправляем главное меню
+        send_welcome(message)
 
 @app.route('/' + TOKEN, methods=['POST'])
 def get_message():
