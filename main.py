@@ -5,7 +5,7 @@ from telebot import types
 
 # Конфигурация
 TOKEN = '8201596025:AAHi7UUJdAr6EWX6JiQAISrnaDsrDHRPvWA'
-VERSION = "v1.8.0 (STABLE)"
+VERSION = "v1.9.1 (FINAL_LINK_FIX)"
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
@@ -53,7 +53,7 @@ def get_message():
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.send_message(message.chat.id, "Здравствуйте! Это официальный гид по Баянаулу. Выберите интересующий вас раздел:", reply_markup=get_main_markup())
+    bot.send_message(message.chat.id, "Здравствуйте! Это официальный гид по Баянаулу. Выберите раздел:", reply_markup=get_main_markup())
 
 @bot.message_handler(func=lambda message: True)
 def handle_text(message):
@@ -69,9 +69,9 @@ def handle_text(message):
         bot.send_photo(message.chat.id, "AgACAgIAAxkBAAICx2pBZtg2C69bIoRxD60hEb104z71AAISG2sblMsRSgNKPSkRUB0jAQADAgADeQADPAQ", 
                        caption="🏠 *Дом №1*\nЦена: 7000 ₸ в сутки.\nКонтакт: Наталия 8 777 939 09 67.", parse_mode="Markdown")
     elif txt == "🏠 Дом №2":
-        bot.send_message(message.chat.id, "🏠 *Дом №2*\nУютный дом для вашего отдыха.\nInstagram: [bulbul.realtor](https://instagram.com/bulbul.realtor)", parse_mode="Markdown")
+        bot.send_message(message.chat.id, "🏠 *Дом №2*\nУютный дом.\nInstagram: [bulbul.realtor](https://instagram.com/bulbul.realtor)", parse_mode="Markdown")
     elif txt == "🏠 Дом №3":
-        bot.send_message(message.chat.id, "📢 *Дом №3*\nСвободное место под ваше объявление. Обратитесь в раздел '📢 Реклама'.", parse_mode="Markdown")
+        bot.send_message(message.chat.id, "📢 *Дом №3*\nСвободное место под рекламу. Обратитесь в раздел '📢 Реклама'.", parse_mode="Markdown")
 
     # --- УСЛУГИ ---
     elif txt == "🛠 Услуги":
@@ -111,11 +111,11 @@ def handle_text(message):
     elif txt == "📋 Условия размещения":
         bot.send_message(message.chat.id, "✅ *Условия:*\nТематика должна соответствовать туризму и отдыху. Без спама и мошенничества.", parse_mode="Markdown")
     elif txt == "👤 Контакты":
-        bot.send_message(message.chat.id, "👤 *Администратор бота:*\nСвяжитесь по вопросам рекламы: @Askelad_lucius_Artorius_Castus", parse_mode="Markdown")
+        bot.send_message(message.chat.id, "👤 *Администратор бота:*\nСвяжитесь по вопросам рекламы: [Админ](https://t.me/Askelad_lucius_Artorius_Castus)", parse_mode="Markdown")
     
     # --- ИНФО ---
     elif txt == "ℹ️ О боте":
-        bot.send_message(message.chat.id, f"ℹ️ *Баянаул-помощник {VERSION}*\n\nЭтот бот — ваш личный гид по Баянаулу. Мы собрали всё самое важное: от проверенных домов отдыха до легенд нашего края.\n\nРазработчик: @Askelad_lucius_Artorius_Castus", parse_mode="Markdown")
+        bot.send_message(message.chat.id, f"ℹ️ *Баянаул-помощник {VERSION}*\n\nЭтот бот — ваш личный гид по Баянаулу. Мы собрали всё самое важное: от проверенных домов отдыха до легенд нашего края.\n\nРазработчик: [Админ](https://t.me/Askelad_lucius_Artorius_Castus)", parse_mode="Markdown")
     
     else:
         bot.send_message(message.chat.id, "Команда не найдена. Воспользуйтесь меню.", reply_markup=get_main_markup())
