@@ -5,7 +5,7 @@ from telebot import types
 
 # Конфигурация
 TOKEN = '8201596025:AAHi7UUJdAr6EWX6JiQAISrnaDsrDHRPvWA'
-VERSION = "v2.0.6 (FINAL_MENU_STRUCTURE)"
+VERSION = "v2.0.7 (LINK_UPDATED)"
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
@@ -95,8 +95,7 @@ def handle_text(message):
         bot.send_message(message.chat.id, "🏝 *Сабындыколь*\nИнформация по базам отдыха уточняется.", parse_mode="Markdown")
     
     elif txt == "🏖 Жасыбай":
-        # Сюда вставь реальную ссылку вместо 'instagram.com/sultan_link'
-        bot.send_message(message.chat.id, "🏖 *Базы отдыха на озере Жасыбай:*\n\n1. [Султан](https://instagram.com/sultan_link)", parse_mode="Markdown")
+        bot.send_message(message.chat.id, "🏖 *Базы отдыха на озере Жасыбай:*\n\n1. [Султан](https://www.instagram.com/sultan_zhasybay?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==)", parse_mode="Markdown")
 
     # --- УСЛУГИ ---
     elif txt == "🛠 Услуги":
