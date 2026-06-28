@@ -14,20 +14,20 @@ model = genai.GenerativeModel('gemini-pro')
 
 app = Flask(__name__)
 
-# --- Твои кнопки и меню ---
+# --- Кнопки и Меню ---
 def get_main_menu():
     markup = types.InlineKeyboardMarkup()
-    # Здесь должны быть все твои кнопки
     button1 = types.InlineKeyboardButton("Информация", callback_data="info")
     button2 = types.InlineKeyboardButton("Помощь", callback_data="help")
     markup.add(button1, button2)
     return markup
 
-# --- Твои обработчики команд ---
+# --- Обработка команд ---
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.reply_to(message, "Привет! Выбери действие:", reply_markup=get_main_menu())
 
+# --- Обработка нажатий на кнопки ---
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     if call.data == "info":
@@ -37,7 +37,7 @@ def callback_query(call):
         bot.answer_callback_query(call.id, "Помощь в разработке")
         bot.send_message(call.message.chat.id, "Бот готов к работе.")
 
-# --- Твой основной обработчик сообщений (С ДОБАВЛЕННОЙ ОТЛАДКОЙ) ---
+# --- Основной обработчик сообщений (ИИ) ---
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     try:
@@ -45,10 +45,8 @@ def handle_message(message):
         response = model.generate_content(message.text)
         bot.reply_to(message, response.text)
     except Exception as e:
-        # ЭТА СТРОКА ВАЖНА: она выведет реальную ошибку в логи Render, 
-        # при этом не сломав твой основной код
+        # Это выведет реальную причину ошибки в логи Render
         print(f"DEBUG ERROR: {e}")
-        # Ответ пользователю
         bot.reply_to(message, "Ошибка ИИ.")
 
 # --- Webhook для Render ---
@@ -58,10 +56,10 @@ def webhook():
         json_string = request.get_data().decode('utf-8')
         update = telebot.types.Update.de_json(json_string)
         bot.process_new_updates([update])
-        return ''
+        return '', 200
     else:
         return 'Not allowed', 403
 
-# --- Запуск ---
 if __name__ == '__main__':
+    # Запуск
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
