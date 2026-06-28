@@ -5,7 +5,7 @@ from telebot import types
 
 # Конфигурация
 TOKEN = '8201596025:AAHi7UUJdAr6EWX6JiQAISrnaDsrDHRPvWA'
-VERSION = "v2.0.2 (WITH_ID_GENERATOR)"
+VERSION = "v2.0.6 (FINAL_MENU_STRUCTURE)"
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
@@ -13,17 +13,22 @@ app = Flask(__name__)
 # --- КЛАВИАТУРЫ ---
 def get_main_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add("🏠 Жилье", "🛠 Услуги", "🍔 Еда и напитки", "📜 Легенды", "📢 Реклама", "ℹ️ О боте")
+    markup.add("🏠 Жилье", "🏝 Дома отдыха", "🛠 Услуги", "🍔 Еда и напитки", "📜 Легенды", "📢 Реклама", "ℹ️ О боте")
     return markup
 
 def get_houses_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add("🏠 Cheremushki", "🏠 Дом №2", "🏠 Дом №3", "🔙 Назад")
+    markup.add("🏠 Дом №1", "🏠 Дом №2", "🏠 Дом №3", "🔙 Назад")
+    return markup
+
+def get_holiday_homes_markup():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup.add("🏝 Сабындыколь", "🏖 Жасыбай", "🔙 Назад")
     return markup
 
 def get_services_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add("🚕 Такси", "🏗 Сварка", "⛺️ Юрты", "🔙 Назад")
+    markup.add("🚕 Такси", "🏗 Сварка", "⚡️ Электрик", "⛺️ Юрты", "🔙 Назад")
     return markup
 
 def get_food_markup():
@@ -51,7 +56,6 @@ def get_message():
 
 # --- ОБРАБОТЧИКИ ---
 
-# 1. Спец-функция для получения ID: просто отправь боту фото, и он пришлет ID
 @bot.message_handler(content_types=['photo'])
 def get_photo_id(message):
     file_id = message.photo[-1].file_id
@@ -71,14 +75,28 @@ def handle_text(message):
     # --- ЖИЛЬЕ ---
     elif txt == "🏠 Жилье":
         bot.send_message(message.chat.id, "Выберите вариант:", reply_markup=get_houses_markup())
-    elif txt == "🏠 Cheremushki":
-        # Сюда вставь ID, который бот пришлет тебе в чат, когда ты отправишь ему фото
-        bot.send_photo(message.chat.id, "ВАШ_FILE_ID_СЮДА", 
-                       caption="🏠 *Cheremushki Glemp*\nБаянаул, озеро Сабындыколь.\nЦена: от 20 000 ₸.\nБронь: +7 705 455 91 33.", parse_mode="Markdown")
+    
+    elif txt == "🏠 Дом №1":
+        bot.send_photo(message.chat.id, "AgACAgIAAxkBAAICx2pBZtg2C69bIoRxD60hEb104z71AAISG2sblMsRSgNKPSkRUB0jAQADAgADeQADPAQ", 
+                       caption="🏠 *Дом №1*\nЦена: 7000 ₸ в сутки.\nКонтакт: Наталия 8 777 939 09 67.", parse_mode="Markdown")
+    
     elif txt == "🏠 Дом №2":
         bot.send_message(message.chat.id, "🏠 *Дом №2*\nУютный дом.\nInstagram: [bulbul.realtor](https://instagram.com/bulbul.realtor)", parse_mode="Markdown")
+    
     elif txt == "🏠 Дом №3":
-        bot.send_message(message.chat.id, "📢 *Дом №3*\nСвободное место под рекламу. Обратитесь в раздел '📢 Реклама'.", parse_mode="Markdown")
+        bot.send_photo(message.chat.id, "AgACAgIAAxkBAAIFG2pBc0FWZVvHWqviCs-aAkcea32rAAIdHGsblMsRSmRJU6_AbfyeAQADAgADEQADPAQ", 
+                       caption="🏠 *Cheremushki Glemp*\n📍 Баянаул, озеро Сабындыколь.\n\n💰 *Цены:*\n• Будние дни: 20 000 ₸/сутки\n• Выходные дни: 25 000 ₸/сутки\n\n📞 Бронирование: +7 705 455 91 33.", parse_mode="Markdown")
+
+    # --- ДОМА ОТДЫХА ---
+    elif txt == "🏝 Дома отдыха":
+        bot.send_message(message.chat.id, "Выберите озеро:", reply_markup=get_holiday_homes_markup())
+    
+    elif txt == "🏝 Сабындыколь":
+        bot.send_message(message.chat.id, "🏝 *Сабындыколь*\nИнформация по базам отдыха уточняется.", parse_mode="Markdown")
+    
+    elif txt == "🏖 Жасыбай":
+        # Сюда вставь реальную ссылку вместо 'instagram.com/sultan_link'
+        bot.send_message(message.chat.id, "🏖 *Базы отдыха на озере Жасыбай:*\n\n1. [Султан](https://instagram.com/sultan_link)", parse_mode="Markdown")
 
     # --- УСЛУГИ ---
     elif txt == "🛠 Услуги":
@@ -87,6 +105,8 @@ def handle_text(message):
         bot.send_message(message.chat.id, "🚕 *Такси (Диспетчеры):*\n8 705 707 7262, 8 747 612 7162\n\n*Частные водители:*\n8 705 340 8663, 8 771 850 1458, 8 706 721 3032, 8 777 435 8777", parse_mode="Markdown")
     elif txt == "🏗 Сварка":
         bot.send_message(message.chat.id, "🏗 *Сварщик (Ринат):* 8 705 342 7371", parse_mode="Markdown")
+    elif txt == "⚡️ Электрик":
+        bot.send_message(message.chat.id, "⚡️ *Электрик (Болат):* 8 771 277 7021", parse_mode="Markdown")
     elif txt == "⛺️ Юрты":
         bot.send_message(message.chat.id, "⛺️ *Юрты (Сарыарка):*\n8 705 769 9383\nДоп. номера: 8 705 606 1067, 8 706 721 3032", parse_mode="Markdown")
 
