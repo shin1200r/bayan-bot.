@@ -12,41 +12,61 @@ app = Flask(__name__)
 bot.remove_webhook()
 bot.set_webhook(url=WEBHOOK_URL + TOKEN)
 
+# КИБЕР-МЕНЮ
 def get_main_markup():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add("🏠 Жилье", "🏠 Базы отдыха")
-    markup.add("🏔 Локации", "📜 Легенды")
-    markup.add("🚕 Такси по Баянаулу", "🚚 Доставка")
-    markup.add("📢 Реклама", "ℹ️ О Баянауле")
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup.add("🏢 Жилье", "⛺️ Лагеря", "📜 Легенды", "🚕 Такси", "🚚 Доставка", "📢 Реклама", "⚙️ О системе")
     return markup
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.send_message(message.chat.id, "Добро пожаловать в цифровой гид по Баянаулу! 🏔", reply_markup=get_main_markup())
+    welcome_text = (
+        "```\n"
+        "[ SYSTEM ACCESS GRANTED ]\n"
+        "STATUS: ONLINE\n"
+        "REGION: BAYANAUL_CORE_V1.0\n"
+        "```\n"
+        "Привет, юзер. Выбери модуль для доступа к данным:"
+    )
+    bot.send_message(message.chat.id, welcome_text, parse_mode="Markdown", reply_markup=get_main_markup())
 
 @bot.message_handler(func=lambda message: True)
 def handle_text(message):
-    # Приводим текст к нижнему регистру для надежности
-    text = message.text.strip().lower()
+    txt = message.text
     
-    if "реклам" in text:
-        ads_info = ("📢 *Размещение рекламы*\n\n"
-            "Хотите, чтобы информация о вашем бизнесе появилась в этом боте?\n\n"
-            "📩 *Связаться с разработчиком:*\n"
-            "@Askelad_lucius_Artorius_Castus")
-        bot.send_message(message.chat.id, ads_info, parse_mode="Markdown", reply_markup=get_main_markup())
+    # ЛЕГЕНДЫ (Подменю)
+    if "Легенды" in txt:
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+        markup.add("📖 Жасыбай", "📖 Сабындыколь", "🔙 Главное меню")
+        bot.send_message(message.chat.id, "Выберите архив легенд:", reply_markup=markup)
+        
+    elif "Жасыбай" in txt:
+        bot.send_message(message.chat.id, "📜 *Легенда о Жасыбае:*\nБатыр погиб, защищая перевал от врагов. Озеро названо в его честь.", parse_mode="Markdown")
 
-    elif "жиль" in text:
-        photo_id = "AgACAgIAAxkBAAIBPGpAGjHsRzNxN8Fp0FxGxh580C5iAAIFGGsblMsJSkDowOd5raV3AQADAgADeQADPAQ"
-        bot.send_photo(message.chat.id, photo_id, caption="🏠 *Уютный домик*", parse_mode="Markdown", reply_markup=get_main_markup())
+    # ЖИЛЬЕ
+    elif "Жилье" in txt:
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        markup.add("🏡 VIP-Сектор", "🏠 Эконом-Сектор", "🔙 Главное меню")
+        bot.send_message(message.chat.id, "Сканирование доступных ячеек жилья...", reply_markup=markup)
 
-    elif "доставк" in text:
-        text_delivery = "🍗 *Grill Bayanaul*\n📞 +7 (777) 127-64-40"
-        bot.send_message(message.chat.id, text_delivery, parse_mode="Markdown", reply_markup=get_main_markup())
-    
-    else:
-        # Если ничего не подошло, отправляем главное меню
+    # ОСНОВНЫЕ МОДУЛИ
+    elif "Такси" in txt:
+        bot.send_message(message.chat.id, "🚕 *ТРАНСПОРТНЫЙ МОДУЛЬ*\nОператор: 8-777-435-87-77", parse_mode="Markdown")
+        
+    elif "Доставка" in txt:
+        bot.send_message(message.chat.id, "🚚 *ЛОГИСТИКА ЕДЫ*\nGrill Bayanaul: +7 777 127-64-40", parse_mode="Markdown")
+        
+    elif "Реклама" in txt:
+        bot.send_message(message.chat.id, "📢 *ADVERTISING_PROTOCOL*\nСвязь: @Askelad_lucius_Artorius_Castus", parse_mode="Markdown")
+
+    elif "О системе" in txt:
+        bot.send_message(message.chat.id, "🖥 *Cyber-Bayanaul v1.0*\nРазработчик: Askelad\nЛокация: Pavlodar Region", parse_mode="Markdown")
+        
+    elif "Главное меню" in txt or "🔙" in txt:
         send_welcome(message)
+
+    else:
+        bot.send_message(message.chat.id, "Команда не распознана. Используйте кнопки управления.", reply_markup=get_main_markup())
 
 @app.route('/' + TOKEN, methods=['POST'])
 def get_message():
