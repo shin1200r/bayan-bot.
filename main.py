@@ -57,10 +57,10 @@ def handle_text(message):
 
 @app.route('/' + TOKEN, methods=['POST'])
 def get_message():
-    json_str = request.get_data().decode('utf-8')
-    update = telebot.types.Update.de_json(json_str)
+    json_data = request.get_data().decode('utf-8')
+    # Это выведет в логи Render всё, что прислал Telegram
+    print(f"DEBUG_RAW: {json_data}") 
+    
+    update = telebot.types.Update.de_json(json_data)
     bot.process_new_updates([update])
     return "!", 200
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
