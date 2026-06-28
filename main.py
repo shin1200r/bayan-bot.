@@ -22,12 +22,12 @@ def get_main_menu():
     markup.add(button1, button2)
     return markup
 
-# --- Обработка команд ---
+# --- Команды ---
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.reply_to(message, "Привет! Выбери действие:", reply_markup=get_main_menu())
 
-# --- Обработка нажатий на кнопки ---
+# --- Обработка кнопок ---
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     if call.data == "info":
@@ -37,20 +37,19 @@ def callback_query(call):
         bot.answer_callback_query(call.id, "Помощь в разработке")
         bot.send_message(call.message.chat.id, "Бот готов к работе.")
 
-# --- Основной обработчик сообщений (ИИ) ---
+# --- Обработка текста (ИИ) ---
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     try:
-        # Попытка получить ответ от Gemini
         response = model.generate_content(message.text)
         bot.reply_to(message, response.text)
     except Exception as e:
-        # Это выведет реальную причину ошибки в логи Render
         print(f"DEBUG ERROR: {e}")
         bot.reply_to(message, "Ошибка ИИ.")
 
-# --- Webhook для Render ---
-@app.route('/', methods=['POST'])
+# --- Исправленный Webhook для Render ---
+# Теперь бот слушает запросы по пути с токеном, как того требует Telegram
+@app.route('/' + TELEGRAM_TOKEN, methods=['POST'])
 def webhook():
     if request.headers.get('content-type') == 'application/json':
         json_string = request.get_data().decode('utf-8')
@@ -61,5 +60,4 @@ def webhook():
         return 'Not allowed', 403
 
 if __name__ == '__main__':
-    # Запуск
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
