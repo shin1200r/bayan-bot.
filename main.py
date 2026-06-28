@@ -14,7 +14,7 @@ def get_main_markup():
     markup.add("🏠 Жилье", "🏠 Базы отдыха")
     markup.add("🏔 Локации", "📜 Легенды")
     markup.add("🚕 Такси по Баянаулу", "🚚 Доставка")
-    markup.add("ℹ️ О Баянауле")
+    markup.add("📢 Реклама", "ℹ️ О Баянауле") # Вот сюда добавили кнопку
     return markup
 
 @bot.message_handler(content_types=['photo'])
@@ -73,6 +73,15 @@ def handle_text(message):
                 "📞 +7 (777) 127-64-40")
         bot.send_message(message.chat.id, text, parse_mode="Markdown", reply_markup=get_main_markup())
 
+    elif message.text == "📢 Реклама":
+        ads_info = ("📢 *Размещение рекламы*\n\n"
+            "Хотите, чтобы информация о вашем бизнесе появилась в этом боте? "
+            "Это отличный способ привлечь туристов в Баянауле!\n\n"
+            "📩 *Связаться с разработчиком:*\n"
+            "Напишите мне лично: @Askelad_lucius_Artorius_Castus\n"
+            "Обсудим условия и форматы размещения.")
+        bot.send_message(message.chat.id, ads_info, parse_mode="Markdown", reply_markup=get_main_markup())
+   
     elif message.text == "ℹ️ О Баянауле":
         bot.send_message(message.chat.id, "🏔 *Баянаул — край легенд и героев!*\n\nЭто колыбель выдающихся ученых, поэтов и деятелей. Край кристальных озер и уникальных скал, вдохновляющий на великие свершения!", parse_mode="Markdown", reply_markup=get_main_markup())
 
