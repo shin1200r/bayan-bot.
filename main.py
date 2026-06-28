@@ -1,10 +1,10 @@
 import telebot
 import os
-from flask import Flask
+from flask import Flask, request
 from telebot import types
 
 TOKEN = '8201596025:AAHi7UUJdAr6EWX6JiQAISrnaDsrDHRPvWA'
-VERSION = "v1.2.5"
+VERSION = "v1.2.6"
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
@@ -30,6 +30,14 @@ def get_services_markup():
     markup.add("🚕 Такси", "🏗 Сварка", "⛺️ Юрты", "🔙 Назад")
     return markup
 
+# --- ВЕБХУК (ИСПРАВЛЕНИЕ 404) ---
+@app.route('/' + TOKEN, methods=['POST'])
+def get_message():
+    json_string = request.get_data().decode('utf-8')
+    update = telebot.types.Update.de_json(json_string)
+    bot.process_new_updates([update])
+    return "!", 200
+
 # --- ОБРАБОТЧИКИ ---
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -52,7 +60,7 @@ def handle_text(message):
     elif "Еда и напитки" in txt:
         msg = ("🍔 *Еда и напитки*\n\n"
                "🍺 *BeerPoint*\n"
-               "Напитки, пенное, чипсы, закуски.\n"
+               "Различные напитки, пенное, чипсы, закуски.\n"
                "Режим: 10:00 - 23:00 (без выходных).\n"
                "Доставка: 8 705 176 5220, 8 705 501 8458\n\n"
                "🍗 *Grill Bayanaul*\n"
@@ -70,16 +78,21 @@ def handle_text(message):
         bot.send_message(message.chat.id, f"Версия бота: {VERSION}\nРазработчик: Баянаул-бот", reply_markup=markup)
         
     elif "🔄 Что нового?" in txt:
-        update_log = ("🚀 *Список изменений (v1.2.5):*\n"
-                      "• Добавлен раздел BeerPoint (напитки/закуски).\n"
-                      "• Полностью восстановлено меню Легенд и подменю услуг.\n"
-                      "• Добавлена система версий для отслеживания обновлений.\n"
-                      "• Исправлена навигация: теперь всё на своих местах.")
+        update_log = ("🚀 *Список изменений (v1.2.6):*\n"
+                      "• Исправлена ошибка 404 (бот теперь отвечает!).\n"
+                      "• Полная интеграция всех данных (BeerPoint, легенды).\n"
+                      "• Навигация полностью восстановлена.")
         bot.send_message(message.chat.id, update_log, parse_mode="Markdown")
 
-    # --- ЛЕГЕНДЫ И ПОДМЕНЮ ---
-    elif "📜 " in txt:
-        bot.send_message(message.chat.id, f"Здесь будет легенда про {txt.replace('📜 ', '')}.")
+    # --- ЛЕГЕНДЫ (ДЛИННЫЕ) ---
+    elif "📜 Жасыбай" in txt:
+        bot.send_message(message.chat.id, "📜 *Легенда об озере Жасыбай*\n\nМного веков назад Жасыбай батыр, защищая свой народ от джунгар, получил смертельное ранение. Истекая кровью, он добрался до этого красивого озера, спрятанного среди скал, и там обрел покой. С тех пор озеро носит его имя, а его воды считаются священными и целебными.", parse_mode="Markdown")
+    
+    elif "📜 Сабындыколь" in txt:
+        bot.send_message(message.chat.id, "📜 *Легенда об озере Сабындыколь*\n\nНазвание переводится как «Мыльное озеро». По легенде, красавица Баян-Сулу умывалась здесь, и кусок мыла случайно упал в воду. Вода мгновенно стала мягкой и приятной на ощупь, как будто хранит чистоту и нежность самой красавицы. Говорят, эта вода дарит молодость.", parse_mode="Markdown")
+    
+    elif "📜 Кемпиртас" in txt:
+        bot.send_message(message.chat.id, "📜 *Легенда о скале Кемпиртас*\n\nКемпиртас, или «Голова старухи» — это гранитный утес. Старая легенда гласит, что мудрая старуха всю жизнь ждала своих сыновей с войны, всматриваясь в горизонт. Она так долго и неподвижно ждала, что боги превратили её в камень, чтобы увековечить её верность и терпение.", parse_mode="Markdown")
 
     # --- УСЛУГИ ---
     elif "Такси" in txt:
@@ -100,4 +113,5 @@ def handle_text(message):
 
 # --- ЗАПУСК ---
 if __name__ == "__main__":
+    # Убедись, что WEBHOOK_URL настроен в Render
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
