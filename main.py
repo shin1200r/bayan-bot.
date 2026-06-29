@@ -13,9 +13,12 @@ ADMIN_ID = 7885515418
 
 @bot.message_handler(content_types=['photo'])
 def get_file_id(message):
+    print("Получено фото!") # Это появится в логах Render
     if message.chat.id == ADMIN_ID:
         photo_id = message.photo[-1].file_id
-        bot.reply_to(message, f"Твой file_id: `{photo_id}`", parse_mode="Markdown")
+        bot.reply_to(message, f"Твой file_id:\n`{photo_id}`", parse_mode="Markdown")
+    else:
+        print(f"Фото прислал кто-то другой (ID: {message.chat.id})")
         
 # --- КЛАВИАТУРЫ ---
 def get_main_markup():
