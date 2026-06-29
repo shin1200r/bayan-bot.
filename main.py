@@ -8,7 +8,7 @@ import google.generativeai as genai
 # Вставь сюда свой токен
 TOKEN = '8201596025:AAHi7UUJdAr6EWX6JiQAISrnaDsrDHRPvWA'
 # Вставь сюда свой API ключ
-GEMINI_API_KEY = 'AQ.Ab8RN6JEzMyLIZDN6zNXtDtOzft0rlq-Ytt4hlNCW37XHds4XQ' 
+GEMINI_API_KEY = 'AQ.Ab8RN6Lq1-HozzGXfYcJ-GDyNqMA7FveMeMKKPqRXaieGNU6XQ' 
 VERSION = "v2.0.9 (AI_INTEGRATED_FULL)"
 
 genai.configure(api_key=GEMINI_API_KEY)
