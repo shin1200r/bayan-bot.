@@ -12,12 +12,22 @@ app = Flask(__name__)
 
 # --- ФУНКЦИЯ ДЛЯ ПОЛУЧЕНИЯ FILE_ID (ТОЛЬКО ДЛЯ ТЕБЯ) ---
 # Ставим её в начало, чтобы она срабатывала первой
-@bot.message_handler(content_types=['photo'])
+@bot.message_handler(content_types=['photo', 'document'])
 def get_file_id(message):
+    # Добавляем логирование, чтобы ты увидел в логах Render, что именно пришло
+    print(f"DEBUG: Получено сообщение типа {message.content_type} от ID {message.chat.id}")
+    
     if message.chat.id == ADMIN_ID:
-        photo_id = message.photo[-1].file_id
-        bot.reply_to(message, f"Твой file_id:\n`{photo_id}`", parse_mode="Markdown")
-
+        # Если это фото
+        if message.content_type == 'photo':
+            file_id = message.photo[-1].file_id
+        # Если это файл/документ
+        else:
+            file_id = message.document.file_id
+            
+        bot.reply_to(message, f"Твой file_id:\n`{file_id}`", parse_mode="Markdown")
+    else:
+        print(f"Попытка доступа с ID: {message.chat.id}, а должен быть {ADMIN_ID}")
 # --- КЛАВИАТУРЫ ---
 def get_main_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
