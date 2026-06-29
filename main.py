@@ -154,9 +154,10 @@ def handle_text(message):
             prompt = f"База знаний:\n{data}\n\nВопрос пользователя: {txt}"
             response = model.generate_content(prompt)
             bot.send_message(chat_id, response.text, parse_mode="Markdown")
+      
         except Exception as e:
-            print(f"Ошибка ИИ: {e}")
-            bot.send_message(chat_id, "Извините, возникла ошибка при ответе.")
-
+            # Бот пришлет ошибку прямо в чат, чтобы мы её увидели
+            bot.send_message(chat_id, f"Ошибка ИИ: {str(e)}")
+            
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
