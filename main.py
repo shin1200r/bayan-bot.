@@ -5,21 +5,19 @@ from telebot import types
 
 # --- КОНФИГУРАЦИЯ ---
 TOKEN = '8201596025:AAHi7UUJdAr6EWX6JiQAISrnaDsrDHRPvWA'
+ADMIN_ID = 7885515418
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
-ADMIN_ID = 7885515418
-
+# --- ФУНКЦИЯ ДЛЯ ПОЛУЧЕНИЯ FILE_ID (ТОЛЬКО ДЛЯ ТЕБЯ) ---
+# Ставим её в начало, чтобы она срабатывала первой
 @bot.message_handler(content_types=['photo'])
 def get_file_id(message):
-    print("Получено фото!") # Это появится в логах Render
     if message.chat.id == ADMIN_ID:
         photo_id = message.photo[-1].file_id
         bot.reply_to(message, f"Твой file_id:\n`{photo_id}`", parse_mode="Markdown")
-    else:
-        print(f"Фото прислал кто-то другой (ID: {message.chat.id})")
-        
+
 # --- КЛАВИАТУРЫ ---
 def get_main_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
