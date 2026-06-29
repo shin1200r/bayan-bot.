@@ -2,37 +2,12 @@ import telebot
 import os
 from flask import Flask, request
 from telebot import types
-import google.generativeai as genai
 
 # --- КОНФИГУРАЦИЯ ---
-# Вставь сюда свой токен
-TOKEN = '8201596025:AAHi7UUJdAr6EWX6JiQAISrnaDsrDHRPvWA'
-# Вставь сюда свой API ключ
-GEMINI_API_KEY = 'AQ.Ab8RN6Lq1-HozzGXfYcJ-GDyNqMA7FveMeMKKPqRXaieGNU6XQ' 
-VERSION = "v2.0.9 (AI_INTEGRATED_FULL)"
-
-genai.configure(api_key=GEMINI_API_KEY)
-
-# Настройка ИИ
-SYSTEM_PROMPT = """
-Ты — официальный виртуальный гид по Баянаулу. 
-Твоя задача — отвечать на вопросы пользователя, используя данные из базы знаний.
-Если ответа нет в базе, вежливо направляй к администратору @Askelad_lucius_Artorius_Castus.
-Никогда не выдумывай факты. Будь вежливым, кратким, используй Markdown.
-"""
-
-model = genai.GenerativeModel(model_name='gemini-1.5-flash', system_instruction=SYSTEM_PROMPT)
+TOKEN = 'ВСТАВЬ_СЮДА_ТОКЕН_БОТА'
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
-
-# --- ФУНКЦИЯ ДЛЯ ЧТЕНИЯ БАЗЫ ---
-def load_data():
-    try:
-        with open("data.txt", "r", encoding="utf-8") as file:
-            return file.read()
-    except FileNotFoundError:
-        return "Информации пока нет."
 
 # --- КЛАВИАТУРЫ ---
 def get_main_markup():
@@ -70,7 +45,7 @@ def get_ads_markup():
     markup.add("📋 Условия размещения", "💰 Стоимость", "👤 Контакты", "🔙 Назад")
     return markup
 
-# --- ВЕБХУК (ИСПРАВЛЕНО) ---
+# --- ВЕБХУК ---
 @app.route('/', methods=['POST'])
 def get_message():
     json_string = request.get_data().decode('utf-8')
@@ -79,11 +54,6 @@ def get_message():
     return "!", 200
 
 # --- ОБРАБОТЧИКИ ---
-@bot.message_handler(content_types=['photo'])
-def get_photo_id(message):
-    file_id = message.photo[-1].file_id
-    bot.reply_to(message, f"📸 *Твой file_id:*\n`{file_id}`", parse_mode="Markdown")
-
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.send_message(message.chat.id, "Здравствуйте! Добро пожаловать в официальный гид по Баянаулу.", reply_markup=get_main_markup())
@@ -144,20 +114,9 @@ def handle_text(message):
     elif txt == "👤 Контакты":
         bot.send_message(chat_id, "👤 *Администратор бота:*\nСвяжитесь по вопросам рекламы: [Админ](https://t.me/Askelad_lucius_Artorius_Castus)", parse_mode="Markdown")
     elif txt == "ℹ️ О боте":
-        bot.send_message(chat_id, f"ℹ️ *Баянаул-помощник {VERSION}*\n\nЭтот бот — ваш личный гид.", parse_mode="Markdown")
-    
-    # --- ИНТЕГРАЦИЯ ИИ ---
+        bot.send_message(chat_id, "ℹ️ *Баянаул-помощник*\nЭтот бот — ваш личный гид.", parse_mode="Markdown")
     else:
-        try:
-            bot.send_chat_action(chat_id, 'typing')
-            data = load_data()
-            prompt = f"База знаний:\n{data}\n\nВопрос пользователя: {txt}"
-            response = model.generate_content(prompt)
-            bot.send_message(chat_id, response.text, parse_mode="Markdown")
-      
-        except Exception as e:
-            # Бот пришлет ошибку прямо в чат, чтобы мы её увидели
-            bot.send_message(chat_id, f"Ошибка ИИ: {str(e)}")
-            
+        bot.send_message(chat_id, "Я не понимаю эту команду. Выберите пункт меню.")
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
