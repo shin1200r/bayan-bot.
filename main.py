@@ -4,7 +4,6 @@ from flask import Flask, request
 from telebot import types
 
 # --- КОНФИГУРАЦИЯ ---
-# Не забудь вставить свой токен, если он был удален
 TOKEN = '8661561994:AAGeVm4SpAcerP2onphlvr7PGbv6wnN41jc'
 
 bot = telebot.TeleBot(TOKEN)
@@ -18,7 +17,6 @@ def get_main_markup():
 
 def get_houses_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    # Дом №2 удален
     markup.add("🏠 Дом №1", "🏠 Дом №3", "🔙 Назад")
     return markup
 
@@ -71,7 +69,6 @@ def handle_text(message):
         bot.send_message(chat_id, "Выберите вариант:", reply_markup=get_houses_markup())
     elif txt == "🏠 Дом №1":
         bot.send_photo(chat_id, "AgACAgIAAxkBAAICx2pBZtg2C69bIoRxD60hEb104z71AAISG2sblMsRSgNKPSkRUB0jAQADAgADeQADPAQ", caption="🏠 *Дом №1*\nЦена: 7000 ₸ в сутки.\nКонтакт: Наталия 8 777 939 09 67.", parse_mode="Markdown")
-    # Блок "Дом №2" удален
     elif txt == "🏠 Дом №3":
         bot.send_photo(chat_id, "AgACAgIAAxkBAAIFG2pBc0FWZVvHWqviCs-aAkcea32rAAIdHGsblMsRSmRJU6_AbfyeAQADAgADEQADPAQ", caption="🏠 *Cheremushki Glemp*\n📍 Баянаул, озеро Сабындыколь.\n\n💰 *Цены:*\n• Будние дни: 20 000 ₸/сутки\n• Выходные дни: 25 000 ₸/сутки\n\n📞 Бронирование: +7 705 455 91 33.", parse_mode="Markdown")
     elif txt == "🏝 Дома отдыха":
