@@ -10,74 +10,23 @@ ADMIN_ID = 7885515418
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
-# --- ФУНКЦИЯ ДЛЯ ПОЛУЧЕНИЯ FILE_ID (ТОЛЬКО ДЛЯ ТЕБЯ) ---
-# Ставим её в начало, чтобы она срабатывала первой
+# 1. ОБРАБОТЧИК ФОТО (ДОЛЖЕН БЫТЬ ПЕРВЫМ!)
 @bot.message_handler(content_types=['photo', 'document'])
 def get_file_id(message):
-    # Добавляем логирование, чтобы ты увидел в логах Render, что именно пришло
-    print(f"DEBUG: Получено сообщение типа {message.content_type} от ID {message.chat.id}")
-    
     if message.chat.id == ADMIN_ID:
-        # Если это фото
         if message.content_type == 'photo':
             file_id = message.photo[-1].file_id
-        # Если это файл/документ
         else:
             file_id = message.document.file_id
-            
         bot.reply_to(message, f"Твой file_id:\n`{file_id}`", parse_mode="Markdown")
-    else:
-        print(f"Попытка доступа с ID: {message.chat.id}, а должен быть {ADMIN_ID}")
-# --- КЛАВИАТУРЫ ---
-def get_main_markup():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add("🏠 Жилье", "🏝 Дома отдыха", "🛠 Услуги", "🍔 Еда и напитки", "📜 Легенды", "📢 Реклама", "ℹ️ О боте")
-    return markup
 
-def get_houses_markup():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add("🏠 Дом №1", "🏠 Дом №3", "🔙 Назад")
-    return markup
-
-def get_holiday_homes_markup():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add("🏝 Сабындыколь", "🏖 Жасыбай", "🔙 Назад")
-    return markup
-
-def get_services_markup():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add("🚕 Такси", "🏗 Сварка", "⚡️ Электрик", "⛺️ Юрты", "🔙 Назад")
-    return markup
-
-def get_food_markup():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add("🍺 BeerPoint", "🍹 Bar 2", "🔥 Шашлыки", "🔙 Назад")
-    return markup
-
-def get_legends_markup():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add("📜 Жасыбай", "📜 Сабындыколь", "📜 Кемпиртас", "🔙 Назад")
-    return markup
-
-def get_ads_markup():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add("📋 Условия размещения", "💰 Стоимость", "👤 Контакты", "🔙 Назад")
-    return markup
-
-# --- ВЕБХУК ---
-@app.route('/', methods=['POST'])
-def get_message():
-    json_string = request.get_data().decode('utf-8')
-    update = telebot.types.Update.de_json(json_string)
-    bot.process_new_updates([update])
-    return "!", 200
-
-# --- ОБРАБОТЧИКИ ---
+# 2. ОБРАБОТЧИК КОМАНДЫ /START
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.send_message(message.chat.id, "Здравствуйте! Добро пожаловать в официальный гид по Баянаулу.", reply_markup=get_main_markup())
 
-@bot.message_handler(func=lambda message: True)
+# 3. ОБРАБОТЧИК ТЕКСТА (ТОЛЬКО ТЕКСТ!)
+@bot.message_handler(content_types=['text'])
 def handle_text(message):
     txt = message.text
     chat_id = message.chat.id
@@ -145,5 +94,7 @@ def handle_text(message):
     else:
         bot.send_message(chat_id, "Я не понимаю эту команду. Выберите пункт меню.")
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
+# --- КЛАВИАТУРЫ ---
+def get_main_markup():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup.add("🏠 Жилье", "🏝 Дома отдыха", "🛠 Услуги", "🍔 Еда и напитки",
