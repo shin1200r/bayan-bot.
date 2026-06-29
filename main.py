@@ -5,11 +5,11 @@ from telebot import types
 import google.generativeai as genai
 
 # --- КОНФИГУРАЦИЯ ---
+# Вставь сюда свой токен
 TOKEN = '8201596025:AAHi7UUJdAr6EWX6JiQAISrnaDsrDHRPvWA'
+# Вставь сюда свой API ключ
+GEMINI_API_KEY = 'AQ.Ab8RN6JEzMyLIZDN6zNXtDtOzft0rlq-Ytt4hlNCW37XHds4XQ' 
 VERSION = "v2.0.9 (AI_INTEGRATED_FULL)"
-
-# Вставь сюда свой НОВЫЙ ключ
-GEMINI_API_KEY = 'ВАШ_КЛЮЧ_СЮДА' 
 
 genai.configure(api_key=GEMINI_API_KEY)
 
@@ -70,8 +70,8 @@ def get_ads_markup():
     markup.add("📋 Условия размещения", "💰 Стоимость", "👤 Контакты", "🔙 Назад")
     return markup
 
-# --- ВЕБХУК ---
-@app.route('/' + TOKEN, methods=['POST'])
+# --- ВЕБХУК (ИСПРАВЛЕНО) ---
+@app.route('/', methods=['POST'])
 def get_message():
     json_string = request.get_data().decode('utf-8')
     update = telebot.types.Update.de_json(json_string)
@@ -93,7 +93,6 @@ def handle_text(message):
     txt = message.text
     chat_id = message.chat.id
 
-    # --- ВСЕ ТВОИ КНОПКИ (ПРИОРИТЕТ ВЫШЕ) ---
     if txt == "🔙 Назад":
         bot.send_message(chat_id, "Главное меню:", reply_markup=get_main_markup())
     elif txt == "🏠 Жилье":
@@ -147,7 +146,7 @@ def handle_text(message):
     elif txt == "ℹ️ О боте":
         bot.send_message(chat_id, f"ℹ️ *Баянаул-помощник {VERSION}*\n\nЭтот бот — ваш личный гид.", parse_mode="Markdown")
     
-    # --- ИНТЕГРАЦИЯ ИИ (РАБОТАЕТ ТОЛЬКО ЕСЛИ ЭТО НЕ КНОПКА) ---
+    # --- ИНТЕГРАЦИЯ ИИ ---
     else:
         try:
             bot.send_chat_action(chat_id, 'typing')
@@ -155,8 +154,9 @@ def handle_text(message):
             prompt = f"База знаний:\n{data}\n\nВопрос пользователя: {txt}"
             response = model.generate_content(prompt)
             bot.send_message(chat_id, response.text, parse_mode="Markdown")
-        except Exception:
-            bot.send_message(chat_id, "Извините, не могу ответить.")
+        except Exception as e:
+            print(f"Ошибка ИИ: {e}")
+            bot.send_message(chat_id, "Извините, возникла ошибка при ответе.")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
