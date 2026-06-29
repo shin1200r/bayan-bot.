@@ -9,6 +9,14 @@ TOKEN = '8201596025:AAHi7UUJdAr6EWX6JiQAISrnaDsrDHRPvWA'
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
+ADMIN_ID = 7885515418
+
+@bot.message_handler(content_types=['photo'])
+def get_file_id(message):
+    if message.chat.id == ADMIN_ID:
+        photo_id = message.photo[-1].file_id
+        bot.reply_to(message, f"Твой file_id: `{photo_id}`", parse_mode="Markdown")
+        
 # --- КЛАВИАТУРЫ ---
 def get_main_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
