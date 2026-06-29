@@ -4,7 +4,7 @@ from flask import Flask, request
 from telebot import types
 
 # --- КОНФИГУРАЦИЯ ---
-TOKEN = 'ВСТАВЬ_СЮДА_ТОКЕН_БОТА'
+TOKEN = '8201596025:AAHi7UUJdAr6EWX6JiQAISrnaDsrDHRPvWA'
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
