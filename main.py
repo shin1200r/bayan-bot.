@@ -65,18 +65,23 @@ def handle_text(message):
 
     if txt == "🔙 Назад":
         bot.send_message(chat_id, "Главное меню:", reply_markup=get_main_markup())
+    
     elif txt == "🏠 Жилье":
         bot.send_message(chat_id, "Выберите вариант:", reply_markup=get_houses_markup())
+    
     elif txt == "🏠 Дом №1":
         bot.send_photo(chat_id, "AgACAgIAAxkBAAICx2pBZtg2C69bIoRxD60hEb104z71AAISG2sblMsRSgNKPSkRUB0jAQADAgADeQADPAQ", caption="🏠 *Дом №1*\nЦена: 7000 ₸ в сутки.\nКонтакт: Наталия 8 777 939 09 67.", parse_mode="Markdown")
+    
     elif txt == "🏠 Дом №3":
         bot.send_photo(chat_id, "AgACAgIAAxkBAAIFG2pBc0FWZVvHWqviCs-aAkcea32rAAIdHGsblMsRSmRJU6_AbfyeAQADAgADEQADPAQ", caption="🏠 *Cheremushki Glemp*\n📍 Баянаул, озеро Сабындыколь.\n\n💰 *Цены:*\n• Будние дни: 20 000 ₸/сутки\n• Выходные дни: 25 000 ₸/сутки\n\n📞 Бронирование: +7 705 455 91 33.", parse_mode="Markdown")
+    
     elif txt == "🏝 Дома отдыха":
         bot.send_message(chat_id, "Выберите озеро:", reply_markup=get_holiday_homes_markup())
     elif txt == "🏝 Сабындыколь":
         bot.send_message(chat_id, "🏝 *Сабындыколь*\nИнформация по базам отдыха уточняется.", parse_mode="Markdown")
     elif txt == "🏖 Жасыбай":
         bot.send_message(chat_id, "🏖 *Базы отдыха на озере Жасыбай:*\n\n1. [Султан](https://www.instagram.com/sultan_zhasybay?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==)", parse_mode="Markdown")
+    
     elif txt == "🛠 Услуги":
         bot.send_message(chat_id, "Выберите услугу:", reply_markup=get_services_markup())
     elif txt == "🚕 Такси":
@@ -87,6 +92,7 @@ def handle_text(message):
         bot.send_message(chat_id, "⚡️ *Электрик (Болат):* 8 771 277 7021", parse_mode="Markdown")
     elif txt == "⛺️ Юрты":
         bot.send_message(chat_id, "⛺️ *Юрты (Сарыарка):*\n8 705 769 9383\nДоп. номера: 8 705 606 1067, 8 706 721 3032", parse_mode="Markdown")
+    
     elif txt == "🍔 Еда и напитки":
         bot.send_message(chat_id, "Выберите заведение:", reply_markup=get_food_markup())
     elif txt == "🍺 BeerPoint":
@@ -95,6 +101,7 @@ def handle_text(message):
         bot.send_message(chat_id, "🍹 *Bar 2*\nИнформация о меню уточняется.", parse_mode="Markdown")
     elif txt == "🔥 Шашлыки":
         bot.send_message(chat_id, "🔥 *Шашлыки (Халал)*\nЗаказ по телефону: +7 777 688 6689", parse_mode="Markdown")
+    
     elif txt == "📜 Легенды":
         bot.send_message(chat_id, "Выберите легенду:", reply_markup=get_legends_markup())
     elif txt == "📜 Жасыбай":
@@ -103,6 +110,7 @@ def handle_text(message):
         bot.send_message(chat_id, "📜 *Легенда о Сабындыколе*\nНазвание озера переводится как 'Мыльное озеро'...", parse_mode="Markdown")
     elif txt == "📜 Кемпиртас":
         bot.send_message(chat_id, "📜 *Легенда о Кемпиртас*\nВ народе говорят о мудрой старухе...", parse_mode="Markdown")
+    
     elif txt == "📢 Реклама":
         bot.send_message(chat_id, "Выберите действие:", reply_markup=get_ads_markup())
     elif txt == "💰 Стоимость":
@@ -111,8 +119,10 @@ def handle_text(message):
         bot.send_message(chat_id, "✅ *Условия:*\nТематика должна соответствовать туризму и отдыху.", parse_mode="Markdown")
     elif txt == "👤 Контакты":
         bot.send_message(chat_id, "👤 *Администратор бота:*\nСвяжитесь по вопросам рекламы: [Админ](https://t.me/Askelad_lucius_Artorius_Castus)", parse_mode="Markdown")
+    
     elif txt == "ℹ️ О боте":
         bot.send_message(chat_id, "ℹ️ *Баянаул-помощник*\nЭтот бот — ваш личный гид.", parse_mode="Markdown")
+    
     else:
         bot.send_message(chat_id, "Я не понимаю эту команду. Выберите пункт меню.")
 
