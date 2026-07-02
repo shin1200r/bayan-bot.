@@ -3,14 +3,18 @@ import os
 from flask import Flask, request
 from telebot import types
 
-# --- КОНФИГУРАЦИЯ ---
-TOKEN = '8201596025:AAHi7UUJdAr6EWX6JiQAISrnaDsrDHRPvWA'
+# Теперь бот берет токен из настроек сервера (Environment Variables)
+# Если переменной нет, бот выдаст ошибку, но не "слив" ключа
+TOKEN = os.environ.get('BOT_TOKEN')
+if not TOKEN:
+    raise ValueError("Нет токена! Установите переменную окружения BOT_TOKEN в настройках Render")
+
 ADMIN_ID = 7885515418
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
-# --- 1. ОБРАБОТЧИК ФОТО (ДЛЯ ПОЛУЧЕНИЯ ID) ---
+# --- Обработчик фото ---
 @bot.message_handler(content_types=['photo', 'document'])
 def handle_files(message):
     if message.chat.id == ADMIN_ID:
@@ -18,16 +22,16 @@ def handle_files(message):
             file_id = message.photo[-1].file_id
         else:
             file_id = message.document.file_id
-        bot.reply_to(message, f"📸 *Твой file_id:*\n`{file_id}`", parse_mode="Markdown")
+        bot.reply_to(message, f"📸 *ID:* `{file_id}`", parse_mode="Markdown")
     else:
-        bot.reply_to(message, "Я не умею обрабатывать файлы, выберите пункт меню.")
+        bot.reply_to(message, "Я не умею обрабатывать файлы.")
 
-# --- 2. ОБРАБОТЧИК КОМАНДЫ /START ---
+# --- Старт ---
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.send_message(message.chat.id, "Здравствуйте! Добро пожаловать в официальный гид по Баянаулу.", reply_markup=get_main_markup())
+    bot.send_message(message.chat.id, "Здравствуйте! Добро пожаловать в гид по Баянаулу.", reply_markup=get_main_markup())
 
-# --- 3. ОБРАБОТЧИК ТЕКСТА (КНОПКИ) ---
+# --- Обработчик текста ---
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
     txt = message.text
@@ -35,24 +39,18 @@ def handle_text(message):
 
     if txt == "🔙 Назад":
         bot.send_message(chat_id, "Главное меню:", reply_markup=get_main_markup())
-    
-    # ЖИЛЬЕ
     elif txt == "🏠 Жилье":
         bot.send_message(chat_id, "Выберите вариант:", reply_markup=get_houses_markup())
     elif txt == "🏠 Дом №1":
         bot.send_photo(chat_id, "AgACAgIAAxkBAAICx2pBZtg2C69bIoRxD60hEb104z71AAISG2sblMsRSgNKPSkRUB0jAQADAgADeQADPAQ", caption="🏠 *Дом №1*\nЦена: 7000 ₸ в сутки.\nКонтакт: Наталия 8 777 939 09 67.", parse_mode="Markdown")
     elif txt == "🏠 Дом №3":
         bot.send_photo(chat_id, "AgACAgIAAxkBAAIFG2pBc0FWZVvHWqviCs-aAkcea32rAAIdHGsblMsRSmRJU6_AbfyeAQADAgADEQADPAQ", caption="🏠 *Cheremushki Glemp*\n📍 Баянаул, озеро Сабындыколь.\n💰 Цены: Будни 20 000 ₸, Выходные 25 000 ₸.\n📞 Бронирование: +7 705 455 91 33.", parse_mode="Markdown")
-    
-    # ДОМА ОТДЫХА
     elif txt == "🏝 Дома отдыха":
         bot.send_message(chat_id, "Выберите озеро:", reply_markup=get_holiday_homes_markup())
     elif txt == "🏝 Сабындыколь":
         bot.send_message(chat_id, "🏝 *Сабындыколь*\nИнформация по базам отдыха уточняется.", parse_mode="Markdown")
     elif txt == "🏖 Жасыбай":
         bot.send_message(chat_id, "🏖 *Базы отдыха на озере Жасыбай:*\n\n1. [Султан](https://www.instagram.com/sultan_zhasybay)", parse_mode="Markdown")
-    
-    # УСЛУГИ
     elif txt == "🛠 Услуги":
         bot.send_message(chat_id, "Выберите услугу:", reply_markup=get_services_markup())
     elif txt == "🚕 Такси":
@@ -63,8 +61,6 @@ def handle_text(message):
         bot.send_message(chat_id, "⚡️ *Электрик (Болат):* 8 771 277 7021", parse_mode="Markdown")
     elif txt == "⛺️ Юрты":
         bot.send_message(chat_id, "⛺️ *Юрты (Сарыарка):*\n8 705 769 9383\nДоп. номера: 8 705 606 1067, 8 706 721 3032", parse_mode="Markdown")
-    
-    # ЕДА
     elif txt == "🍔 Еда и напитки":
         bot.send_message(chat_id, "Выберите заведение:", reply_markup=get_food_markup())
     elif txt == "🍺 BeerPoint":
@@ -73,8 +69,6 @@ def handle_text(message):
         bot.send_message(chat_id, "🍹 *Bar 2*\nИнформация о меню уточняется.", parse_mode="Markdown")
     elif txt == "🔥 Шашлыки":
         bot.send_message(chat_id, "🔥 *Шашлыки (Халал)*\nЗаказ по телефону: +7 777 688 6689", parse_mode="Markdown")
-    
-    # ЛЕГЕНДЫ
     elif txt == "📜 Легенды":
         bot.send_message(chat_id, "Выберите легенду:", reply_markup=get_legends_markup())
     elif txt == "📜 Жасыбай":
@@ -83,8 +77,6 @@ def handle_text(message):
         bot.send_message(chat_id, "📜 *Легенда о Сабындыколе*\nНазвание озера переводится как 'Мыльное озеро'...", parse_mode="Markdown")
     elif txt == "📜 Кемпиртас":
         bot.send_message(chat_id, "📜 *Легенда о Кемпиртас*\nВ народе говорят о мудрой старухе...", parse_mode="Markdown")
-    
-    # РЕКЛАМА
     elif txt == "📢 Реклама":
         bot.send_message(chat_id, "Выберите действие:", reply_markup=get_ads_markup())
     elif txt == "💰 Стоимость":
@@ -93,15 +85,12 @@ def handle_text(message):
         bot.send_message(chat_id, "✅ *Условия:*\nТематика должна соответствовать туризму и отдыху.", parse_mode="Markdown")
     elif txt == "👤 Контакты":
         bot.send_message(chat_id, "👤 *Администратор бота:*\nСвяжитесь по вопросам рекламы: [Админ](https://t.me/Askelad_lucius_Artorius_Castus)", parse_mode="Markdown")
-    
-    # О БОТЕ
     elif txt == "ℹ️ О боте":
-        bot.send_message(chat_id, "ℹ️ *Баянаул-помощник*\nЭтот бот — ваш личный гид.\n\n🚀 *Версия:* Bayanaul Guide: Askelad Edition v2.0\n🛠 *Статус:* Полностью оптимизирован.", parse_mode="Markdown")
-    
+        bot.send_message(chat_id, "ℹ️ *Баянаул-помощник*\nВерсия: Bayanaul Guide v2.0", parse_mode="Markdown")
     else:
-        bot.send_message(chat_id, "Я не понимаю эту команду. Выберите пункт меню.")
+        bot.send_message(chat_id, "Я не понимаю команду. Выберите пункт меню.")
 
-# --- КЛАВИАТУРЫ ---
+# --- Клавиатуры (оставлены без изменений) ---
 def get_main_markup():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     markup.add("🏠 Жилье", "🏝 Дома отдыха", "🛠 Услуги", "🍔 Еда и напитки", "📜 Легенды", "📢 Реклама", "ℹ️ О боте")
@@ -137,7 +126,7 @@ def get_ads_markup():
     markup.add("📋 Условия размещения", "💰 Стоимость", "👤 Контакты", "🔙 Назад")
     return markup
 
-# --- ВЕБХУК ---
+# --- Вебхук ---
 @app.route('/', methods=['POST'])
 def get_message():
     json_string = request.get_data().decode('utf-8')
