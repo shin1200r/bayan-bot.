@@ -84,7 +84,7 @@ def handle_text(message):
     elif txt == "📋 Условия размещения":
         bot.send_message(chat_id, "✅ *Условия:*\nТематика должна соответствовать туризму и отдыху.", parse_mode="Markdown")
     elif txt == "👤 Контакты":
-        bot.send_message(chat_id, "👤 *Администратор бота:*\nСвяжитесь по вопросам рекламы: [Админ](https://t.me/Askelad_lucius_Artorius_Castus)", parse_mode="Markdown")
+        bot.send_message(chat_id, "👤 *Администратор бота:*\nСвяжитесь по вопросам рекламы: [Админ](https://t.me/shin_n0udzen)", parse_mode="Markdown")
     elif txt == "ℹ️ О боте":
         bot.send_message(chat_id, "ℹ️ *Баянаул-помощник*\nВерсия: Bayanaul Guide v2.0", parse_mode="Markdown")
     else:
